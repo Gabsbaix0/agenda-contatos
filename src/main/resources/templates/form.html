@@ -12,6 +12,7 @@
         .btn { margin-top: 16px; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
         .btn-salvar { background: #4a90d9; color: white; }
         .btn-voltar { background: #aaa; color: white; text-decoration: none; padding: 10px 20px; border-radius: 4px; }
+        .erro { color: #e74c3c; font-size: 13px; margin-top: 4px; display: block; }
     </style>
 </head>
 <body>
@@ -21,12 +22,15 @@
         
         <label>Nome:</label>
         <input type="text" th:field="*{nome}" placeholder="Digite o nome"/>
-        
+        <span class="erro" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></span>
+
         <label>Telefone:</label>
         <input type="text" th:field="*{telefone}" placeholder="Digite o telefone"/>
-        
+        <span class="erro" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></span>
+
         <label>Email:</label>
         <input type="email" th:field="*{email}" placeholder="Digite o email"/>
+        <span class="erro" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
         
         <br><br>
         <button type="submit" class="btn btn-salvar">💾 Salvar</button>

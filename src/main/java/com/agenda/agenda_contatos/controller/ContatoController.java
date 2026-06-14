@@ -3,6 +3,7 @@ package com.agenda.agenda_contatos.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.agenda.agenda_contatos.model.Contato;
 import com.agenda.agenda_contatos.repository.ContatoRepository;
+
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/contatos")
@@ -42,13 +45,16 @@ public class ContatoController {
 
     // Salvar (novo e editar)
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Contato contato) {
+    public String salvar(@Valid @ModelAttribute Contato contato, BindingResult result) {
+        if (result.hasErrors()) {
+            return "form";
+        }
         repository.save(contato);
         return "redirect:/contatos";
     }
 
     // Deletar
-    @GetMapping("/deletar/{id}")
+    @PostMapping("/deletar/{id}")
     public String deletar(@PathVariable Long id) {
         repository.deleteById(id);
         return "redirect:/contatos";
