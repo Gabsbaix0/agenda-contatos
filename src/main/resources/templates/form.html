@@ -13,11 +13,12 @@
         .btn-salvar { background: #4a90d9; color: white; }
         .btn-voltar { background: #aaa; color: white; text-decoration: none; padding: 10px 20px; border-radius: 4px; }
         .erro { color: #e74c3c; font-size: 13px; margin-top: 4px; display: block; }
+        .preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; display: block; margin-top: 8px; }
     </style>
 </head>
 <body>
     <h1>📝 Formulário de Contato</h1>
-    <form th:action="@{/contatos/salvar}" th:object="${contato}" method="post">
+    <form th:action="@{/contatos/salvar}" th:object="${contato}" method="post" enctype="multipart/form-data">
         <input type="hidden" th:field="*{id}"/>
         
         <label>Nome:</label>
@@ -31,7 +32,12 @@
         <label>Email:</label>
         <input type="email" th:field="*{email}" placeholder="Digite o email"/>
         <span class="erro" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
-        
+
+        <label>Foto (opcional):</label>
+        <img th:if="${contato.id != null and contato.foto != null}"
+             th:src="@{/contatos/{id}/foto(id=${contato.id})}" class="preview" alt="Foto atual"/>
+        <input type="file" name="imagem" accept="image/*"/>
+
         <br><br>
         <button type="submit" class="btn btn-salvar">💾 Salvar</button>
         <a href="/contatos" class="btn btn-voltar">← Voltar</a>

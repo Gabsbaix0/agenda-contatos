@@ -20,6 +20,8 @@
         .busca { margin: 16px 0; }
         .busca input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 280px; }
         .vazio { padding: 16px; color: #777; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block; }
+        .avatar-vazio { background: #ddd; }
     </style>
 </head>
 <body>
@@ -39,6 +41,7 @@
         <table th:unless="${#lists.isEmpty(contatos)}">
             <thead>
                 <tr>
+                    <th>Foto</th>
                     <th>Nome</th>
                     <th>Telefone</th>
                     <th>Email</th>
@@ -47,6 +50,11 @@
             </thead>
             <tbody>
                 <tr th:each="contato : ${contatos}">
+                    <td>
+                        <img th:if="${contato.foto != null}" class="avatar"
+                             th:src="@{/contatos/{id}/foto(id=${contato.id})}" alt="Foto"/>
+                        <span th:unless="${contato.foto != null}" class="avatar avatar-vazio"></span>
+                    </td>
                     <td th:text="${contato.nome}"></td>
                     <td th:text="${contato.telefone}"></td>
                     <td th:text="${contato.email}"></td>

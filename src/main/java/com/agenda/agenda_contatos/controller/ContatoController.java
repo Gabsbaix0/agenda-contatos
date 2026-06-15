@@ -1,6 +1,10 @@
 package com.agenda.agenda_contatos.controller;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.agenda.agenda_contatos.model.Contato;
@@ -67,12 +72,39 @@ public class ContatoController {
 
     // Salvar (novo e editar)
     @PostMapping("/salvar")
-    public String salvar(@Valid @ModelAttribute Contato contato, BindingResult result) {
+    public String salvar(@Valid @ModelAttribute Contato contato, BindingResult result,
+                         @RequestParam("imagem") MultipartFile imagem) throws IOException {
         if (result.hasErrors()) {
             return "form";
         }
-        repository.save(contato);
+        // Na edição, parte do registro existente para preservar a foto atual
+        Contato alvo = contato.getId() == null
+                ? contato
+                : repository.findById(contato.getId()).orElse(contato);
+        if (alvo != contato) {
+            alvo.setNome(contato.getNome());
+            alvo.setTelefone(contato.getTelefone());
+            alvo.setEmail(contato.getEmail());
+        }
+        if (!imagem.isEmpty() && imagem.getContentType() != null
+                && imagem.getContentType().startsWith("image/")) {
+            alvo.setFoto(imagem.getBytes());
+            alvo.setFotoTipo(imagem.getContentType());
+        }
+        repository.save(alvo);
         return "redirect:/contatos";
+    }
+
+    // Servir a foto de um contato
+    @GetMapping("/{id}/foto")
+    public ResponseEntity<byte[]> foto(@PathVariable Long id) {
+        var contato = repository.findById(id);
+        if (contato.isEmpty() || contato.get().getFoto() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        var c = contato.get();
+        var tipo = c.getFotoTipo() != null ? c.getFotoTipo() : MediaType.IMAGE_JPEG_VALUE;
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(tipo)).body(c.getFoto());
     }
 
     // Deletar

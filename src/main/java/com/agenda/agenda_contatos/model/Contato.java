@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -26,6 +27,11 @@ public class Contato {
     @Email(message = "Informe um email válido")
     private String email;
 
+    @Lob
+    private byte[] foto;
+
+    private String fotoTipo;
+
     // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -38,4 +44,10 @@ public class Contato {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public byte[] getFoto() { return foto; }
+    public void setFoto(byte[] foto) { this.foto = foto; }
+
+    public String getFotoTipo() { return fotoTipo; }
+    public void setFotoTipo(String fotoTipo) { this.fotoTipo = fotoTipo; }
 }
