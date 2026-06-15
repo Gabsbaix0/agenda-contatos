@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.agenda.agenda_contatos.model.Contato;
 import com.agenda.agenda_contatos.repository.ContatoRepository;
@@ -26,7 +27,7 @@ public class ContatoController {
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("contatos", repository.findAll());
-        return "index";
+        return "lista";
     }
 
     // Abrir formulário novo
@@ -38,8 +39,13 @@ public class ContatoController {
 
     // Abrir formulário editar
     @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Long id, Model model) {
-        model.addAttribute("contato", repository.findById(id).orElseThrow());
+    public String editar(@PathVariable Long id, Model model, RedirectAttributes ra) {
+        var contato = repository.findById(id);
+        if (contato.isEmpty()) {
+            ra.addFlashAttribute("mensagem", "Contato não encontrado.");
+            return "redirect:/contatos";
+        }
+        model.addAttribute("contato", contato.get());
         return "form";
     }
 

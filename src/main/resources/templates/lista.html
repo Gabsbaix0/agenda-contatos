@@ -16,10 +16,12 @@
         .btn-novo { background: #4a90d9; }
         .btn-editar { background: #f0a500; }
         .btn-deletar { background: #e74c3c; }
+        .alerta { padding: 12px; border-radius: 4px; margin-bottom: 16px; background: #fdecea; color: #b71c1c; }
     </style>
 </head>
 <body>
     <h1>📋 Agenda de Contatos</h1>
+    <div class="alerta" th:if="${mensagem}" th:text="${mensagem}"></div>
     <a href="/contatos/novo" class="btn btn-novo">+ Novo Contato</a>
     <br><br>
     <table>
