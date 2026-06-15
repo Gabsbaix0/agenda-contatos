@@ -28,38 +28,54 @@
     <a href="/contatos/novo" class="btn btn-novo">+ Novo Contato</a>
 
     <form class="busca" method="get" th:action="@{/contatos}">
-        <input type="text" name="busca" th:value="${busca}" placeholder="Buscar por nome ou telefone"/>
+        <input type="text" id="busca" name="busca" th:value="${busca}" placeholder="Buscar por nome ou telefone" autocomplete="off"/>
         <button type="submit" class="btn btn-novo">Buscar</button>
         <a th:if="${busca}" th:href="@{/contatos}" class="btn btn-editar">Limpar</a>
     </form>
 
-    <p class="vazio" th:if="${#lists.isEmpty(contatos)}">Nenhum contato encontrado.</p>
+    <div id="resultados" th:fragment="resultados">
+        <p class="vazio" th:if="${#lists.isEmpty(contatos)}">Nenhum contato encontrado.</p>
 
-    <table th:unless="${#lists.isEmpty(contatos)}">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Telefone</th>
-                <th>Email</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="contato : ${contatos}">
-                <td th:text="${contato.nome}"></td>
-                <td th:text="${contato.telefone}"></td>
-                <td th:text="${contato.email}"></td>
-                <td>
-                    <a th:href="@{/contatos/editar/{id}(id=${contato.id})}"
-                       class="btn btn-editar">Editar</a>
-                    <form th:action="@{/contatos/deletar/{id}(id=${contato.id})}" method="post"
-                          style="display:inline"
-                          onsubmit="return confirm('Deseja deletar?')">
-                        <button type="submit" class="btn btn-deletar">Deletar</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+        <table th:unless="${#lists.isEmpty(contatos)}">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>Email</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="contato : ${contatos}">
+                    <td th:text="${contato.nome}"></td>
+                    <td th:text="${contato.telefone}"></td>
+                    <td th:text="${contato.email}"></td>
+                    <td>
+                        <a th:href="@{/contatos/editar/{id}(id=${contato.id})}"
+                           class="btn btn-editar">Editar</a>
+                        <form th:action="@{/contatos/deletar/{id}(id=${contato.id})}" method="post"
+                              style="display:inline"
+                              onsubmit="return confirm('Deseja deletar?')">
+                            <button type="submit" class="btn btn-deletar">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:inline="javascript">
+        const url = /*[[@{/contatos/buscar}]]*/ '/contatos/buscar';
+        const campo = document.getElementById('busca');
+        let timer;
+        campo.addEventListener('input', () => {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                fetch(url + '?busca=' + encodeURIComponent(campo.value))
+                    .then(r => r.text())
+                    .then(html => { document.getElementById('resultados').outerHTML = html; });
+            }, 300);
+        });
+    </script>
 </body>
 </html>

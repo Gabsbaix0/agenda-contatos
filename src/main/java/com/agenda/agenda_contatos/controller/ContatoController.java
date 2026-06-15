@@ -27,12 +27,23 @@ public class ContatoController {
     // Listar todos (ou filtrar por nome/telefone)
     @GetMapping
     public String listar(@RequestParam(required = false) String busca, Model model) {
+        popularContatos(busca, model);
+        return "lista";
+    }
+
+    // Busca incremental: devolve só o fragmento com os resultados
+    @GetMapping("/buscar")
+    public String buscar(@RequestParam(required = false) String busca, Model model) {
+        popularContatos(busca, model);
+        return "lista :: resultados";
+    }
+
+    private void popularContatos(String busca, Model model) {
         var contatos = (busca == null || busca.isBlank())
                 ? repository.findAll()
                 : repository.findByNomeContainingIgnoreCaseOrTelefoneContainingIgnoreCase(busca, busca);
         model.addAttribute("contatos", contatos);
         model.addAttribute("busca", busca);
-        return "lista";
     }
 
     // Abrir formulário novo
