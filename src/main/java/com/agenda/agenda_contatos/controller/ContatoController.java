@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.agenda.agenda_contatos.model.Contato;
@@ -23,10 +24,14 @@ public class ContatoController {
     @Autowired
     private ContatoRepository repository;
 
-    // Listar todos
+    // Listar todos (ou filtrar por nome/telefone)
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("contatos", repository.findAll());
+    public String listar(@RequestParam(required = false) String busca, Model model) {
+        var contatos = (busca == null || busca.isBlank())
+                ? repository.findAll()
+                : repository.findByNomeContainingIgnoreCaseOrTelefoneContainingIgnoreCase(busca, busca);
+        model.addAttribute("contatos", contatos);
+        model.addAttribute("busca", busca);
         return "lista";
     }
 

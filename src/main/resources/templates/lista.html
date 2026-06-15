@@ -17,14 +17,25 @@
         .btn-editar { background: #f0a500; }
         .btn-deletar { background: #e74c3c; }
         .alerta { padding: 12px; border-radius: 4px; margin-bottom: 16px; background: #fdecea; color: #b71c1c; }
+        .busca { margin: 16px 0; }
+        .busca input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 280px; }
+        .vazio { padding: 16px; color: #777; }
     </style>
 </head>
 <body>
     <h1>📋 Agenda de Contatos</h1>
     <div class="alerta" th:if="${mensagem}" th:text="${mensagem}"></div>
     <a href="/contatos/novo" class="btn btn-novo">+ Novo Contato</a>
-    <br><br>
-    <table>
+
+    <form class="busca" method="get" th:action="@{/contatos}">
+        <input type="text" name="busca" th:value="${busca}" placeholder="Buscar por nome ou telefone"/>
+        <button type="submit" class="btn btn-novo">Buscar</button>
+        <a th:if="${busca}" th:href="@{/contatos}" class="btn btn-editar">Limpar</a>
+    </form>
+
+    <p class="vazio" th:if="${#lists.isEmpty(contatos)}">Nenhum contato encontrado.</p>
+
+    <table th:unless="${#lists.isEmpty(contatos)}">
         <thead>
             <tr>
                 <th>Nome</th>
